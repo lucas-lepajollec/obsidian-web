@@ -1,36 +1,44 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Obsidian-Web
 
-## Getting Started
+Une interface web moderne, mobile-first, conçue pour naviguer, éditer et visualiser un coffre (vault) Obsidian directement depuis un navigateur.
 
-First, run the development server:
+## Déploiement avec Docker Compose (Recommandé)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+La façon la plus simple de déployer Obsidian-Web sur un NAS ou un serveur est d'utiliser Docker Compose.
+
+1. Créez un fichier `docker-compose.yml` (ou utilisez celui inclus) :
+
+```yaml
+services:
+  obsidian-web:
+    image: ghcr.io/VOTRE_UTILISATEUR/obsidian-web:latest
+    # Si vous voulez build localement au lieu d'utiliser l'image :
+    # build: .
+    container_name: obsidian-web
+    restart: unless-stopped
+    ports:
+      - "2506:3000"
+    volumes:
+      # Modifiez ce chemin pour pointer vers votre dossier Obsidian
+      - /chemin/vers/votre/vault:/vault:rw
+    environment:
+      - NOTES_PATH=/vault
+      # Définissez un mot de passe pour sécuriser l'édition
+      - PERLITE_EDIT_PASSWORD=votre_mot_de_passe_secret
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Lancez le conteneur :
+```bash
+docker-compose up -d
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Accédez à l'application sur `http://<IP_DE_VOTRE_SERVEUR>:2506`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Développement Local
 
-## Learn More
+```bash
+npm install
+npm run dev
+```
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Ouvrez [http://localhost:3000](http://localhost:3000).

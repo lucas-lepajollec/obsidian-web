@@ -1,0 +1,16 @@
+services:
+  obsidian-web:
+    build: .
+    container_name: obsidian-web
+    restart: unless-stopped
+    ports:
+      - "2506:3000"
+    volumes:
+      # Changez /app/appdata/obsidian-web/vault par le chemin absolu de votre coffre sur le NAS/Disque
+      - /app/appdata/obsidian-web/vault:/vault:rw
+    environment:
+      - NOTES_PATH=/vault
+      # Changez ce mot de passe pour sécuriser l'édition
+      - PERLITE_EDIT_PASSWORD=ton_mot_de_passe_secret
+    # Only if you need host integration on NAS
+    pid: host

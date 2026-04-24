@@ -1,0 +1,11 @@
+services:
+  obsidian-web-dev:
+    build: .
+    container_name: obsidian-web-dev
+    ports:
+      - "2499:3000"
+    volumes:
+      - ./vault:/vault:rw
+    environment:
+      - NOTES_PATH=/vault
+      - PERLITE_EDIT_PASSWORD=dev
