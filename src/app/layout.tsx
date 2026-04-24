@@ -11,9 +11,6 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   title: 'Obsidian-Web',
   description: 'Your self-hosted Obsidian vault in the browser',
-  icons: {
-    icon: '/logo-obsidian.png',
-  },
 }
 export default function RootLayout({
   children,
