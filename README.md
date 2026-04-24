@@ -83,7 +83,7 @@ services:
     image: ghcr.io/lucas-lepajollec/obsidian-web:latest
     container_name: obsidian-web
     ports:
-      - "3000:3000"
+      - "2506:2506"
     volumes:
       - /path/to/your/obsidian/vault:/vault
     environment:
@@ -98,7 +98,7 @@ services:
 docker compose up -d
 ```
 
-The application will be available at **http://localhost:3000**.
+The application will be available at **http://localhost:2506**.
 
 ---
 
