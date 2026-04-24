@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   title: 'Obsidian-Web',
   description: 'Your self-hosted Obsidian vault in the browser',
   icons: {
-    icon: '/favicon.ico',
+    icon: '/logo-obsidian.png',
   },
 }
 export default function RootLayout({
