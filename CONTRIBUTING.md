@@ -6,7 +6,7 @@ Thank you for your interest in improving Obsidian-Web! Whether it's fixing bugs,
 
 1. **Fork the repository** and clone it locally:
    ```bash
-   git clone https://github.com/YOUR-USERNAME/obsidian-web.git
+   git clone https://github.com/lucas-lepajollec/obsidian-web.git
    cd obsidian-web
    ```
 2. **Install dependencies**:
@@ -24,7 +24,7 @@ Thank you for your interest in improving Obsidian-Web! Whether it's fixing bugs,
    ```bash
    npm run dev
    ```
-   Open `http://localhost:3000` to view the app.
+   Open `http://localhost:2499` to view the app.
 
 ## 🧠 Architecture Notes
 - **Frontend**: Next.js App Router with React 19.
