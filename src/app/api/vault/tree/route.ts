@@ -1,12 +1,13 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { requireSession } from '@/lib/auth';
+import { apiErrorResponse } from '@/lib/api';
 import { buildVaultTree } from '@/lib/vault';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const tree = buildVaultTree();
-    return NextResponse.json({ tree });
+    requireSession(request, 'read');
+    return NextResponse.json({ tree: await buildVaultTree() }, { headers: { 'Cache-Control': 'no-store' } });
   } catch (error) {
-    console.error("Error building vault tree:", error);
-    return NextResponse.json({ error: "Failed to read vault" }, { status: 500 });
+    return apiErrorResponse(error, 'Unable to read the vault.');
   }
 }

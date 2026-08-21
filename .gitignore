@@ -30,8 +30,13 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
+# local secrets
+.env
+.env.*
+!.env.example
+
+# ShardNote runtime safety data
+**/.shardnote/
 
 # vercel
 .vercel

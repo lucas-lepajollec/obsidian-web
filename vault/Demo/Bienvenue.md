@@ -1,21 +1,21 @@
 ---
 title: Bienvenue
-tags: [obsidian-web, accueil]
+tags: [shardnote, accueil]
 ---
 
-# 👋 Bienvenue sur Obsidian-Web
+# 👋 Bienvenue sur ShardNote
 
-Votre coffre **Obsidian**, directement dans le navigateur. Éditez, organisez et explorez vos notes comme si vous étiez sur l'application native.
+Votre espace Markdown privé, directement dans le navigateur. Éditez, organisez et explorez vos notes depuis tous vos appareils.
 
 ## 🚀 Fonctionnalités
 
 | Fonctionnalité | Description |
 |---|---|
-| 📝 Éditeur | CodeMirror 6, le même moteur qu'Obsidian |
+| 📝 Éditeur | CodeMirror 6 avec sauvegarde automatique |
 | 🔗 Wikilinks | Navigation entre notes : `[[ liens ]]` |
 | 📊 Graphe | Visualisez les connexions entre vos notes |
 | 🔍 Recherche | Recherche globale dans tout le coffre |
-| 🎨 Thème sombre | Interface fidèle à Obsidian |
+| 🛡️ Données sûres | Conflits détectés, sauvegardes et corbeille |
 | 📱 Responsive | Fonctionne sur mobile et desktop |
 
 ## 📂 Explorer le coffre
@@ -26,14 +26,14 @@ Votre coffre **Obsidian**, directement dans le navigateur. Éditez, organisez et
 
 ## 🏷️ Tags
 
-Ce coffre utilise les tags suivants : #obsidian-web #documentation #tutoriel
+Ce coffre utilise les tags suivants : #shardnote #documentation #tutoriel
 
 > [!tip] Astuce
 > Cliquez sur un tag dans le panneau latéral pour rechercher toutes les notes qui le contiennent.
 
 > [!info] Auto-hébergé
-> Obsidian-Web fonctionne entièrement sur votre serveur. Vos données restent chez vous.
+> ShardNote fonctionne entièrement sur votre serveur. Vos données restent chez vous.
 
 ---
 
-*Obsidian-Web — Votre coffre, votre contrôle.*
+*ShardNote — Your notes. Your server. Your control.*

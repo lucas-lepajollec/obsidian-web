@@ -1,95 +1,59 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { readVaultFile, writeVaultFile, renameVaultItem, deleteVaultItem, createVaultFolder } from '@/lib/vault';
+import { assertSameOrigin, requireSession } from '@/lib/auth';
+import { apiErrorResponse, readJsonObject, requiredString, stringValue } from '@/lib/api';
+import { createVaultFolder, deleteVaultItem, readVaultFile, renameVaultItem, writeVaultFile } from '@/lib/vault';
 
 export async function GET(request: NextRequest) {
-  const searchParams = request.nextUrl.searchParams;
-  const filePath = searchParams.get('path');
-
-  if (!filePath) {
-    return NextResponse.json({ error: "Missing path parameter" }, { status: 400 });
+  try {
+    requireSession(request, 'read');
+    const filePath = request.nextUrl.searchParams.get('path');
+    if (!filePath) return NextResponse.json({ error: 'Missing path.' }, { status: 400 });
+    return NextResponse.json(await readVaultFile(filePath), { headers: { 'Cache-Control': 'no-store' } });
+  } catch (error) {
+    return apiErrorResponse(error, 'Unable to read this note.');
   }
-
-  const content = readVaultFile(filePath);
-
-  if (content === null) {
-    return NextResponse.json({ error: "File not found or access denied" }, { status: 404 });
-  }
-
-  return NextResponse.json({ content });
 }
 
 export async function POST(request: NextRequest) {
-  // Check password if env set
-  const editPassword = process.env.PERLITE_EDIT_PASSWORD;
-  
   try {
-    const body = await request.json();
-    const { path, content, password } = body;
-
-    if (!path || content === undefined) {
-      return NextResponse.json({ error: "Missing path or content" }, { status: 400 });
-    }
-
-    if (editPassword && password !== editPassword) {
-      return NextResponse.json({ error: "Unauthorized: Invalid password" }, { status: 401 });
-    }
-
-    const success = writeVaultFile(path, content);
-
-    if (success) {
-      return NextResponse.json({ success: true });
-    } else {
-      return NextResponse.json({ error: "Failed to save file" }, { status: 500 });
-    }
+    assertSameOrigin(request);
+    requireSession(request, 'write');
+    const body = await readJsonObject(request);
+    const path = requiredString(body, 'path');
+    const content = stringValue(body, 'content');
+    const expectedMtimeMs = typeof body.expectedMtimeMs === 'number' ? body.expectedMtimeMs : undefined;
+    return NextResponse.json(await writeVaultFile(path, content, expectedMtimeMs));
   } catch (error) {
-    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+    return apiErrorResponse(error, 'Unable to save this note.');
   }
 }
 
 export async function PUT(request: NextRequest) {
-  const editPassword = process.env.PERLITE_EDIT_PASSWORD;
-  
   try {
-    const body = await request.json();
-    const { action, path, newPath, password } = body;
-
-    if (editPassword && password !== editPassword) {
-      return NextResponse.json({ error: "Unauthorized: Invalid password" }, { status: 401 });
+    assertSameOrigin(request);
+    requireSession(request, 'write');
+    const body = await readJsonObject(request);
+    const action = requiredString(body, 'action');
+    const path = requiredString(body, 'path');
+    if (action === 'rename') {
+      return NextResponse.json(await renameVaultItem(path, requiredString(body, 'newPath')));
     }
-
-    if (action === 'rename' && path && newPath) {
-      const success = renameVaultItem(path, newPath);
-      return success ? NextResponse.json({ success: true }) : NextResponse.json({ error: "Failed to rename" }, { status: 500 });
-    } 
-    
-    if (action === 'mkdir' && path) {
-      const success = createVaultFolder(path);
-      return success ? NextResponse.json({ success: true }) : NextResponse.json({ error: "Failed to create folder" }, { status: 500 });
+    if (action === 'mkdir') {
+      return NextResponse.json(await createVaultFolder(path));
     }
-
-    return NextResponse.json({ error: "Invalid action" }, { status: 400 });
-  } catch {
-    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+    return NextResponse.json({ error: 'Unsupported action.' }, { status: 400 });
+  } catch (error) {
+    return apiErrorResponse(error, 'Unable to update this vault item.');
   }
 }
 
 export async function DELETE(request: NextRequest) {
-  const editPassword = process.env.PERLITE_EDIT_PASSWORD;
-  
   try {
-    const body = await request.json();
-    const { path, password } = body;
-
-    if (!path) return NextResponse.json({ error: "Missing path" }, { status: 400 });
-
-    if (editPassword && password !== editPassword) {
-      return NextResponse.json({ error: "Unauthorized: Invalid password" }, { status: 401 });
-    }
-
-    const success = deleteVaultItem(path);
-    return success ? NextResponse.json({ success: true }) : NextResponse.json({ error: "Failed to delete" }, { status: 500 });
-  } catch {
-    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+    assertSameOrigin(request);
+    requireSession(request, 'write');
+    const body = await readJsonObject(request);
+    return NextResponse.json(await deleteVaultItem(requiredString(body, 'path')));
+  } catch (error) {
+    return apiErrorResponse(error, 'Unable to move this item to the trash.');
   }
 }
-

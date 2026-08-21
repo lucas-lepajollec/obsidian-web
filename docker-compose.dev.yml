@@ -1,11 +1,21 @@
+name: shardnote-dev
+
 services:
-  obsidian-web-dev:
-    build: .
-    container_name: obsidian-web-dev
+  shardnote-dev:
+    build:
+      context: .
+      target: development
+    container_name: shardnote-dev
+    init: true
     ports:
-      - "2499:3000"
+      - "2499:2499"
     volumes:
-      - ./vault:/vault:rw
+      - .:/app
+      - /app/node_modules
+      - ${SHARDNOTE_VAULT_PATH:-./vault}:/vault:rw
     environment:
-      - NOTES_PATH=/vault
-      - PERLITE_EDIT_PASSWORD=dev
+      NOTES_PATH: /vault
+      SHARDNOTE_PASSWORD: ${SHARDNOTE_PASSWORD:?Set SHARDNOTE_PASSWORD in your environment or .env file}
+      SHARDNOTE_SESSION_SECRET: ${SHARDNOTE_SESSION_SECRET:?Set SHARDNOTE_SESSION_SECRET in your environment or .env file}
+      SHARDNOTE_PUBLIC_READ: ${SHARDNOTE_PUBLIC_READ:-false}
+      SHARDNOTE_SECURE_COOKIES: "false"

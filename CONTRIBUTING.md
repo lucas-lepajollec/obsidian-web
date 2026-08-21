@@ -1,38 +1,22 @@
-# Contributing to Obsidian-Web 💎
+# Contributing to ShardNote
 
-Thank you for your interest in improving Obsidian-Web! Whether it's fixing bugs, improving the graph visualization, or adding new editor features, your contributions are welcome.
+Thank you for helping improve ShardNote.
 
-## 🛠️ Local Development Setup
+## Setup
 
-1. **Fork the repository** and clone it locally:
-   ```bash
-   git clone https://github.com/lucas-lepajollec/obsidian-web.git
-   cd obsidian-web
-   ```
-2. **Install dependencies**:
-   ```bash
-   npm install
-   ```
-3. **Environment Setup (Crucial Step)**:
-   You need to link the app to a local Obsidian vault to test it. Create a `.env.local` file at the root:
-   ```env
-   # Point this to a test vault on your computer
-   NOTES_PATH=C:/Users/YourName/Documents/TestVault
-   AUTH_PASSWORD=dev_password
-   ```
-4. **Start the server**:
-   ```bash
-   npm run dev
-   ```
-   Open `http://localhost:2499` to view the app.
+1. Fork and clone the repository.
+2. Run `npm install`.
+3. Copy `.env.example` to `.env.local` and use a disposable test vault.
+4. Run `npm run dev` for localhost or `npm run dev:lan` on a trusted network.
 
-## 🧠 Architecture Notes
-- **Frontend**: Next.js App Router with React 19.
-- **Editor**: We use CodeMirror 6. Any new Markdown parsing features should be added via CodeMirror extensions.
-- **Graph**: The force-directed graph is a custom Canvas implementation for performance. 
+Never test destructive or migration behavior against your only copy of a real vault.
 
-## 📦 Pull Request Process
+## Pull requests
 
-1. Test your changes against a realistic Obsidian vault (with folders, links, and tags).
-2. Ensure you haven't committed any personal markdown notes in the `/vault` directory.
-3. Submit your PR with a clear description of what you added or fixed.
+- Keep filesystem operations behind `src/lib/vault.ts`.
+- Add tests for path, authentication, or data-integrity changes.
+- Do not commit personal notes, `.env` files, secrets, build outputs, or `.shardnote` recovery data.
+- Run `npm run check` and `git diff --check` before submitting.
+- Document behavior and configuration changes.
+
+ShardNote is independent and must not reuse third-party brand assets.

@@ -5,13 +5,13 @@ tags: [tutoriel, markdown]
 
 # Syntaxe Markdown
 
-Cette note présente les principales syntaxes Markdown supportées par Obsidian-Web.
+Cette note présente les principales syntaxes Markdown supportées par ShardNote.
 
 ## Texte de base
 
 Voici du texte **gras**, *italique*, ~~barré~~ et ==surligné==.
 
-Un [lien externe](https://obsidian.md) et un lien interne : [[Bienvenue]].
+Un [lien externe](https://commonmark.org) et un lien interne : [[Bienvenue]].
 
 ## Listes
 
@@ -28,7 +28,7 @@ Un [lien externe](https://obsidian.md) et un lien interne : [[Bienvenue]].
 3. Troisième étape
 
 ### Tâches
-- [x] Installer Obsidian-Web
+- [x] Installer ShardNote
 - [x] Explorer le coffre démo
 - [ ] Créer ma première note
 - [ ] Configurer Docker
@@ -49,7 +49,7 @@ function saluer(nom) {
   return `Bonjour, ${nom} ! 👋`;
 }
 
-console.log(saluer("Obsidian-Web"));
+console.log(saluer("ShardNote"));
 ```
 
 ```python

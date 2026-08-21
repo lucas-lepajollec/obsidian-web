@@ -1,16 +1,24 @@
+name: shardnote
+
 services:
-  obsidian-web:
-    build: .
-    container_name: obsidian-web
+  shardnote:
+    build:
+      context: .
+      target: runner
+    container_name: shardnote
     restart: unless-stopped
+    init: true
     ports:
-      - "2506:3000"
+      - "2506:2506"
     volumes:
-      # Changez /app/appdata/obsidian-web/vault par le chemin absolu de votre coffre sur le NAS/Disque
-      - /app/appdata/obsidian-web/vault:/vault:rw
+      - ${SHARDNOTE_VAULT_PATH:-./vault}:/vault:rw
     environment:
-      - NOTES_PATH=/vault
-      # Changez ce mot de passe pour sécuriser l'édition
-      - PERLITE_EDIT_PASSWORD=ton_mot_de_passe_secret
-    # Only if you need host integration on NAS
-    pid: host
+      NOTES_PATH: /vault
+      SHARDNOTE_PASSWORD: ${SHARDNOTE_PASSWORD:?Set SHARDNOTE_PASSWORD in your environment or .env file}
+      SHARDNOTE_SESSION_SECRET: ${SHARDNOTE_SESSION_SECRET:?Set SHARDNOTE_SESSION_SECRET in your environment or .env file}
+      SHARDNOTE_PUBLIC_READ: ${SHARDNOTE_PUBLIC_READ:-false}
+      SHARDNOTE_SECURE_COOKIES: ${SHARDNOTE_SECURE_COOKIES:-false}
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL

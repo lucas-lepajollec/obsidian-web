@@ -1,19 +1,19 @@
 'use client';
 
 import React, { useMemo, useCallback } from 'react';
-import ReactMarkdown from 'react-markdown';
+import ReactMarkdown, { defaultUrlTransform } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
-import rehypeRaw from 'rehype-raw';
-import { Copy } from 'lucide-react';
+import Image from 'next/image';
 
 interface Props {
   content: string;
+  notePath?: string;
   onNavigate?: (path: string) => void;
 }
 
-export default function MarkdownViewer({ content, onNavigate }: Props) {
+export default function MarkdownViewer({ content, notePath, onNavigate }: Props) {
   // Pre-process: convert wikilinks [[target|label]] → markdown links
   // and callouts > [!type] → styled divs
   const processed = useMemo(() => processContent(content), [content]);
@@ -25,8 +25,9 @@ export default function MarkdownViewer({ content, onNavigate }: Props) {
   return (
     <div className="prose">
       <ReactMarkdown
-        remarkPlugins={[remarkGfm, remarkMath]}
-        rehypePlugins={[rehypeKatex, rehypeRaw]}
+        remarkPlugins={[remarkGfm, remarkMath, remarkCallouts]}
+        rehypePlugins={[rehypeKatex]}
+        urlTransform={url => url.startsWith('shardnote-nav://') ? url : defaultUrlTransform(url)}
         components={{
           // Headings with anchor IDs
           h1: ({ children, ...props }) => {
@@ -77,8 +78,8 @@ export default function MarkdownViewer({ content, onNavigate }: Props) {
           },
           // Links: handle wikilinks and internal navigation
           a: ({ href, children, ...props }) => {
-            if (href?.startsWith('obsidian-nav://')) {
-              const path = decodeURIComponent(href.replace('obsidian-nav://', ''));
+            if (href?.startsWith('shardnote-nav://')) {
+              const path = decodeURIComponent(href.replace('shardnote-nav://', ''));
               return (
                 <a
                   className="wikilink"
@@ -92,10 +93,16 @@ export default function MarkdownViewer({ content, onNavigate }: Props) {
             }
             return <a href={href} target="_blank" rel="noopener noreferrer" {...props}>{children}</a>;
           },
-          // Images: clickable
-          img: ({ src, alt, ...props }) => (
-            <img src={src} alt={alt || ''} title={alt || ''} loading="lazy" {...props} />
-          ),
+          // Remote images are blocked by default to avoid leaking client metadata.
+          img: ({ src, alt }) => {
+            const value = typeof src === 'string' ? src : '';
+            if (/^(?:https?:)?\/\//i.test(value)) {
+              return <span className="external-image-blocked">Image distante bloquée · {alt || value}</span>;
+            }
+            const resolved = resolveAttachmentPath(notePath, value);
+            if (!resolved) return <span className="external-image-blocked">Chemin de pièce jointe refusé · {alt || value}</span>;
+            return <Image src={`/api/vault/asset?path=${encodeURIComponent(resolved)}`} alt={alt || ''} width={1200} height={800} unoptimized />;
+          },
           // Task list checkboxes
           input: ({ type, checked, ...props }) => {
             if (type === 'checkbox') {
@@ -114,56 +121,60 @@ export default function MarkdownViewer({ content, onNavigate }: Props) {
 // ─── Content Processing ─────────────────────────────────
 
 function processContent(raw: string): string {
-  let content = raw;
-
-  // Remove frontmatter
-  content = content.replace(/^---\n[\s\S]*?\n---\n?/m, (match) => {
-    return parseFrontmatter(match);
-  });
-
+  let content = raw.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n?/, '');
   // Convert [[wikilinks]] to custom navigable links
   content = content.replace(/\[\[([^\]]+)\]\]/g, (_, link) => {
     const parts = link.split('|');
     const target = parts[0].trim();
     const label = parts.length > 1 ? parts[1].trim() : target;
-    return `[${label}](obsidian-nav://${encodeURIComponent(target)})`;
+    return `[${label}](shardnote-nav://${encodeURIComponent(target)})`;
   });
-
-  // Convert callouts > [!type] title...
-  content = content.replace(/^> \[!([\w-]+)\]([-+])?\s*(.*?)$\n((?:^>.*$\n?)*)/gm, (_, type, fold, title, body) => {
-    const typeLC = type.toLowerCase();
-    const bodyText = body.replace(/^> ?/gm, '').trim();
-    const cssClass = `callout callout-${typeLC}`;
-    const icon = getCalloutIcon(typeLC);
-    return `<div class="${cssClass}"><div class="callout-title">${icon} ${title || type}</div><div>${bodyText}</div></div>\n`;
-  });
-
-  // Convert ==highlights== to <mark>
-  content = content.replace(/==(.*?)==/g, '<mark>$1</mark>');
-
   return content;
 }
 
-function parseFrontmatter(raw: string): string {
-  const inner = raw.replace(/^---\n?/, '').replace(/\n?---\n?$/, '').trim();
-  if (!inner) return '';
-  const lines = inner.split('\n').map(l => {
-    const idx = l.indexOf(':');
-    if (idx === -1) return `<span>${l}</span>`;
-    const key = l.substring(0, idx).trim();
-    const val = l.substring(idx + 1).trim();
-    return `<span class="fm-key">${key}</span>: <span class="fm-val">${val}</span>`;
-  });
-  return `<div class="frontmatter-block">${lines.join('<br/>')}</div>\n\n`;
+interface MarkdownNode {
+  type: string;
+  value?: string;
+  children?: MarkdownNode[];
+  data?: { hName?: string; hProperties?: Record<string, unknown> };
 }
 
-function getCalloutIcon(type: string): string {
-  const icons: Record<string, string> = {
-    note: '📝', info: 'ℹ️', tip: '💡', warning: '⚠️', caution: '🔴', danger: '🔴',
-    important: '❗', example: '📋', quote: '💬', abstract: '📄', summary: '📖',
-    todo: '☑️', success: '✅', question: '❓', failure: '❌', bug: '🐛',
+function remarkCallouts() {
+  return (tree: MarkdownNode) => {
+    const visit = (node: MarkdownNode) => {
+      if (node.type === 'blockquote') {
+        const firstText = node.children?.[0]?.children?.[0];
+        const match = firstText?.value?.match(/^\[!([\w-]+)\][-+]?\s*(.*)$/i);
+        if (match && firstText) {
+          const type = match[1].toLowerCase();
+          firstText.value = match[2] || match[1];
+          node.data = {
+            hName: 'div',
+            hProperties: { className: `callout callout-${type}` },
+          };
+        }
+      }
+      node.children?.forEach(visit);
+    };
+    visit(tree);
   };
-  return icons[type] || '📝';
+}
+
+function resolveAttachmentPath(notePath: string | undefined, assetPath: string): string | null {
+  if (!assetPath || assetPath.startsWith('/') || /^[a-zA-Z]:/.test(assetPath)) return null;
+  const base = notePath?.split('/').slice(0, -1) ?? [];
+  const segments = [...base, ...assetPath.replace(/\\/g, '/').split('/')];
+  const normalized: string[] = [];
+  for (const segment of segments) {
+    if (!segment || segment === '.') continue;
+    if (segment === '..') {
+      if (!normalized.length) return null;
+      normalized.pop();
+    } else {
+      normalized.push(segment);
+    }
+  }
+  return normalized.join('/');
 }
 
 function extractText(children: React.ReactNode): string {

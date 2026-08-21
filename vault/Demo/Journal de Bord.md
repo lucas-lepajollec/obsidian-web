@@ -9,7 +9,7 @@ Un espace pour vos notes quotidiennes et réflexions.
 
 ## 22 Avril 2026
 
-Aujourd'hui, j'ai installé **Obsidian-Web** sur mon serveur. L'interface est vraiment fidèle à l'application native.
+Aujourd'hui, j'ai installé **ShardNote** sur mon serveur. Mon espace Markdown est maintenant disponible sur tous mes appareils.
 
 ### Ce que j'ai appris
 - La syntaxe [[Syntaxe Markdown|Markdown]] est très puissante
@@ -17,7 +17,7 @@ Aujourd'hui, j'ai installé **Obsidian-Web** sur mon serveur. L'interface est vr
 - Le graphe permet de visualiser les connexions entre notes
 
 ### Prochaines étapes
-- [ ] Migrer mes notes depuis l'application desktop
+- [ ] Importer mes notes Markdown existantes
 - [ ] Configurer les volumes Docker pour la sauvegarde
 - [ ] Explorer les thèmes personnalisés
 
@@ -28,11 +28,11 @@ Aujourd'hui, j'ai installé **Obsidian-Web** sur mon serveur. L'interface est vr
 
 ## 21 Avril 2026
 
-Premiers pas avec le projet. J'ai découvert que Perlite pouvait être étendu pour supporter l'édition.
+Premiers pas avec ShardNote et son éditeur web auto-hébergé.
 
 ### Notes
 - Le coffre est monté via Docker volumes
-- L'authentification est gérée par variable d'environnement
+- L'authentification ouvre une session privée côté serveur
 - Les données restent sur le serveur, rien n'est envoyé à l'extérieur
 
 #journal #quotidien #réflexion

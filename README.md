@@ -1,158 +1,115 @@
 <div align="center">
-  <img src="public/logo.svg" alt="Obsidian-Web Logo" width="100" />
-  
-  <h1>💎 Obsidian-Web</h1>
-  <p><strong>A Sleek, Mobile-First Web Interface for Your Obsidian Vault</strong></p>
-  
-  <p>
-    <a href="https://nextjs.org/"><img src="https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=next.js&logoColor=white" alt="Next.js" /></a>
-    <a href="https://reactjs.org/"><img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React" /></a>
-    <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" /></a>
-    <a href="https://www.docker.com/"><img src="https://img.shields.io/badge/Docker-2CA5E0?style=for-the-badge&logo=docker&logoColor=white" alt="Docker" /></a>
-    <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge" alt="License" /></a>
-  </p>
-
-  <img src="public/obsidian-web.png" alt="Obsidian-Web Interface Screenshot" width="800" />
+  <img src="public/logo.svg" alt="ShardNote" width="320" />
+  <p><strong>A private, self-hosted Markdown workspace for the web.</strong></p>
 </div>
 
----
+ShardNote lets you browse, search, edit, and explore a folder of Markdown notes from a responsive browser interface. It works with ordinary `.md` files and common wiki links, so your content remains portable and under your control.
 
-Obsidian-Web is a high-performance, mobile-optimized web viewer and editor for your Obsidian vaults. Designed to feel familiar to Obsidian users while being accessible from any browser, it allows you to browse your notes, visualize your knowledge graph, and edit content on the go with a premium, glassmorphic UI.
+ShardNote is an independent project and is not affiliated with or endorsed by Obsidian.
 
-## ✨ Features
+## Highlights
 
-- **📱 Mobile-First Design**: Fully responsive interface with touch-optimized buttons, slide-out panels, and a smooth bottom-sheet action menu.
-- **📝 Real-time Markdown Editing**: Integrated CodeMirror 6 editor with syntax highlighting and automatic saving.
-- **🕸️ Interactive Knowledge Graph**: Visualize the connections between your notes with a performant 2D force-directed graph view.
-- **🔍 Global Search & Folders**: Quickly navigate your vault with an intuitive folder tree and a lightning-fast full-text search.
-- **🔒 Secure Access**: Password-protected edit mode to ensure your notes remain private while allowing read-only access.
-- **🌗 Premium Aesthetics**: A handcrafted design system featuring sleek gradients, subtle micro-animations, and a deep-space dark mode.
-- **📦 Zero-Config Docker**: Ready to deploy in seconds with a multi-stage Docker build optimized for size and performance.
+- Responsive file explorer, tabs, reading mode, and CodeMirror editor
+- Wiki-link graph, backlinks, tags, full-text search, and bookmarks
+- Password-protected private sessions using an HttpOnly cookie
+- Automatic saves with conflict detection and atomic file replacement
+- Automatic pre-save backups and recoverable trash
+- No external fonts, analytics, remote images, or cloud account
+- Production Docker image running as an unprivileged user
 
----
+## Requirements
 
-## 🛠️ Tech Stack
+- Node.js 22 or Docker with Compose
+- A folder containing Markdown notes
+- A password of at least 12 characters
+- A random session secret of at least 32 characters
 
-| Category         | Technologies Used                                                                 |
-| ---------------- | --------------------------------------------------------------------------------- |
-| **Frontend Core**| Next.js 15 (App Router), React 19, TypeScript                                     |
-| **Styling**      | Tailwind CSS 4, Custom Vanilla CSS, Lucide React (Icons)                          |
-| **Editor/Vis**   | CodeMirror 6 (Markdown, One Dark Theme), Custom Canvas Graph Implementation       |
-| **Deployment**   | Docker (Multi-stage `node:22-alpine` standalone build)                            |
+## Local development
 
----
-
-## 🚀 Getting Started
-
-### Prerequisites
-
-- [Node.js](https://nodejs.org/) (v20+) and npm
-- [Docker](https://docs.docker.com/get-docker/) & [Docker Compose](https://docs.docker.com/compose/install/) (for container deployment)
-
-### 1. Environment Variables
-
-Clone the repository and set up your environment:
-```bash
-git clone [https://github.com/lucas-lepajollec/obsidian-web.git](https://github.com/lucas-lepajollec/obsidian-web.git)
-cd obsidian-web
-cp .env.example .env.local
-```
-
-Edit `.env.local` with your secure password and the absolute path to your Obsidian vault:
-```env
-NOTES_PATH=C:/Users/YourName/Documents/MyVault
-AUTH_PASSWORD=your_secure_password
-```
-
-### 2. Local Development
-
-Install dependencies and start the dev server:
-```bash
+```powershell
 npm install
+Copy-Item .env.example .env.local
 npm run dev
 ```
-*The application will be running at `http://localhost:3000`.*
 
----
+Open `http://127.0.0.1:2499`. Replace both placeholder credentials in `.env.local` before signing in.
 
-## 🐳 Docker Deployment
+Local development binds only to the current machine. To test from another device on a trusted network:
 
-You can deploy the application using the pre-built image, or build it locally from the source code.
-
-### Option A: Using the Pre-built Image (Recommended)
-This uses the official image hosted on GitHub Container Registry. No local build required.
-
-Create a `docker-compose.yml`:
-```yaml
-services:
-  obsidian-web:
-    image: ghcr.io/lucas-lepajollec/obsidian-web:latest
-    container_name: obsidian-web
-    ports:
-      - "2506:2506"
-    environment:
-      - NOTES_PATH=/vault
-      - AUTH_PASSWORD=your_secure_password
-    volumes:
-      - /path/to/your/obsidian/vault:/vault
-    restart: unless-stopped
-```
-Run: `docker compose up -d`
-
-### Option B: Build from Source
-If you want to modify the code and build your own Docker image locally.
-
-Create a `docker-compose.yml`:
-```yaml
-services:
-  obsidian-web:
-    build: .
-    container_name: obsidian-web-dev
-    ports:
-      - "2506:2506"
-    environment:
-      - NOTES_PATH=/vault
-      - AUTH_PASSWORD=your_secure_password
-    volumes:
-      - /path/to/your/obsidian/vault:/vault
-    restart: unless-stopped
-```
-Run: `docker compose up -d --build`
-
----
-
-## 🔒 Security Best Practices
-
-> [!WARNING]
-> **Authentication**: Always use a strong, unique string for your `AUTH_PASSWORD`. Do not expose your Obsidian-Web instance to the public internet without ensuring this password is secure.
-
-- **Reverse Proxy**: It is highly recommended to place Obsidian-Web behind a reverse proxy (like Nginx, Traefik, or Caddy) with an active SSL/TLS certificate if accessing it remotely.
-- **Vault Backups**: Obsidian-Web interacts directly with your markdown files. Ensure your vault directory is regularly backed up.
-
----
-
-## 📂 Project Structure
-```text
-obsidian-web/
-├── vault/                  # Demo vault (included for testing)
-├── public/                 # Static assets (favicons, images)
-├── src/
-│   ├── app/                # Next.js App Router (Pages, API Routes, Layouts)
-│   ├── components/         # React components (Editor, Viewer, Graph, Sidebar)
-│   ├── lib/                # Backend logic (Vault indexing, file operations)
-│   └── globals.css         # Global styles and Tailwind directives
-├── Dockerfile              # Multi-stage production build
-└── docker-compose.yml      # Deployment configuration
+```powershell
+npm run dev:lan
 ```
 
----
+The command binds ShardNote to `0.0.0.0`, authorizes only the detected local development origins, and prints every available network URL. Open the Wi-Fi URL from the phone while both devices are on the same network.
 
-## 🤝 Contributing
+Generate a session secret with:
 
-Contributions are welcome! Please read our [Contributing Guidelines](CONTRIBUTING.md) to learn how to setup your environment, and our [Code of Conduct](CODE_OF_CONDUCT.md) for details on our community standards.
+```powershell
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+```
 
----
+## Docker Compose
 
-<div align="center">
-  Made with ❤️ by Lucas Lepajollec
-</div>
+Create a `.env` file next to `docker-compose.yml`:
+
+```env
+SHARDNOTE_VAULT_PATH=C:/Users/you/Documents/MyVault
+SHARDNOTE_PASSWORD=replace-with-a-long-unique-password
+SHARDNOTE_SESSION_SECRET=replace-with-at-least-32-random-characters
+SHARDNOTE_PUBLIC_READ=false
+SHARDNOTE_SECURE_COOKIES=false
+```
+
+Then start ShardNote:
+
+```powershell
+docker compose up -d --build
+```
+
+Open `http://127.0.0.1:2506`. When ShardNote is served through HTTPS, set `SHARDNOTE_SECURE_COOKIES=true`.
+
+The container runs as UID/GID `1001`. Ensure that this user can write to the mounted vault when required by your NAS or Linux host.
+
+## Configuration
+
+| Variable | Required | Default | Purpose |
+| --- | --- | --- | --- |
+| `NOTES_PATH` | No | `./vault` | Markdown vault path |
+| `SHARDNOTE_PASSWORD` | Yes | — | Password of at least 12 characters used only by the login endpoint |
+| `SHARDNOTE_SESSION_SECRET` | Yes | — | Signs 12-hour session cookies |
+| `SHARDNOTE_PUBLIC_READ` | No | `false` | Allows anonymous reading while keeping writes private |
+| `SHARDNOTE_SECURE_COOKIES` | No | `true` in production | Restricts the session cookie to HTTPS |
+| `SHARDNOTE_AUTH_DISABLED` | Development only | `false` | Disables authentication; rejected in production |
+
+ShardNote refuses access when the required authentication variables are missing or too weak.
+
+## Data safety
+
+- Existing notes are copied to `.shardnote/backups/<note>/` before replacement.
+- Deleted files and folders are moved to `.shardnote/trash/` instead of being erased.
+- A save is rejected with HTTP `409` when the note changed on disk after it was opened.
+- Symbolic links and paths outside the configured vault are rejected.
+- Files larger than 5 MB and vaults larger than 5,000 notes are rejected by default.
+
+The `.shardnote` directory lives inside the configured vault and should be included in your regular backups. ShardNote improves recovery but is not a replacement for versioned backups.
+
+## Security model
+
+Private reading is the default. Authentication uses a signed, HttpOnly, SameSite session cookie; passwords are not stored in browser storage or sent with individual vault operations. State-changing requests require a same-origin marker and pass origin checks. Login attempts are rate-limited per client address.
+
+For remote access, place ShardNote behind an HTTPS reverse proxy or a trusted private network such as Tailscale. Do not expose a direct HTTP instance to the public internet.
+
+Remote images embedded in notes are intentionally blocked to prevent browsers from leaking visitor metadata. Raw HTML in Markdown is not executed.
+
+## Validation
+
+```powershell
+npm run check
+docker compose config
+```
+
+`npm run check` runs ESLint, TypeScript, unit tests, and the production build.
+
+## License
+
+MIT. See [LICENSE](LICENSE).

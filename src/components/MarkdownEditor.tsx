@@ -16,6 +16,13 @@ interface Props {
 export default function MarkdownEditor({ content, onChange, onSave }: Props) {
   const parentRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<EditorView | null>(null);
+  const onChangeRef = useRef(onChange);
+  const onSaveRef = useRef(onSave);
+
+  useEffect(() => {
+    onChangeRef.current = onChange;
+    onSaveRef.current = onSave;
+  }, [onChange, onSave]);
 
   useEffect(() => {
     if (!parentRef.current) return;
@@ -29,7 +36,7 @@ export default function MarkdownEditor({ content, onChange, onSave }: Props) {
       {
         key: 'Mod-s',
         run: () => {
-          onSave?.();
+          onSaveRef.current?.();
           return true;
         },
       },
@@ -44,7 +51,7 @@ export default function MarkdownEditor({ content, onChange, onSave }: Props) {
         saveKeymap,
         EditorView.updateListener.of((update) => {
           if (update.docChanged) {
-            onChange(update.state.doc.toString());
+            onChangeRef.current(update.state.doc.toString());
           }
         }),
         EditorView.theme({
@@ -53,9 +60,9 @@ export default function MarkdownEditor({ content, onChange, onSave }: Props) {
           '.cm-content': { padding: '24px 0' },
           '.cm-gutters': { background: '#181818', border: 'none' },
           '.cm-activeLineGutter': { background: '#222' },
-          '.cm-activeLine': { background: 'rgba(124,58,237,0.06)' },
-          '.cm-cursor': { borderLeftColor: '#7c3aed' },
-          '.cm-selectionBackground': { background: 'rgba(124,58,237,0.2) !important' },
+          '.cm-activeLine': { background: 'rgba(79,140,255,0.07)' },
+          '.cm-cursor': { borderLeftColor: '#7487b8' },
+          '.cm-selectionBackground': { background: 'rgba(79,140,255,0.22) !important' },
         }),
       ],
     });

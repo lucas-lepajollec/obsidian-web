@@ -5,7 +5,7 @@ tags: [tutoriel, avancé, latex, callout]
 
 # Fonctionnalités Avancées
 
-Obsidian-Web supporte les fonctionnalités avancées d'Obsidian.
+ShardNote prend en charge les wikilinks, les callouts, les formules mathématiques et le frontmatter des fichiers Markdown.
 
 ## Callouts
 
@@ -16,21 +16,21 @@ Obsidian-Web supporte les fonctionnalités avancées d'Obsidian.
 > Les astuces sont parfaites pour partager des bonnes pratiques.
 
 > [!warning] Attention
-> Faites attention à sauvegarder vos notes régulièrement !
+> ShardNote sauvegarde automatiquement, mais conservez toujours une sauvegarde versionnée de votre coffre.
 
 > [!info] Information
-> Obsidian-Web est basé sur Next.js 15 et CodeMirror 6.
+> ShardNote est basé sur Next.js 16, React 19 et CodeMirror 6.
 
 > [!example] Exemple
 > Voici un exemple de configuration Docker :
 > ```yaml
 > services:
->   obsidian-web:
->     image: obsidian-web
+>   shardnote:
+>     build: .
 >     ports:
->       - "2506:3000"
+>       - "2506:2506"
 >     volumes:
->       - /chemin/vers/vault:/app/vault
+>       - /chemin/vers/vault:/vault
 > ```
 
 > [!caution] Danger
@@ -71,13 +71,13 @@ Vous pouvez utiliser un alias : [[Bienvenue|Retour à l'accueil]]
 
 ## Frontmatter
 
-Le frontmatter YAML est affiché en haut de chaque note. Il contient les métadonnées comme le titre, les tags, et la date.
+Le frontmatter YAML reste conservé dans le fichier et n'est pas affiché dans le mode lecture.
 
 ## Raccourcis clavier
 
 | Raccourci | Action |
 |-----------|--------|
-| `Ctrl+S` | Sauvegarder |
+| `Ctrl+S` | Sauvegarder immédiatement |
 | Clic éditeur | Basculer en mode édition |
 | Clic lecture | Basculer en mode lecture |
 

@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title id="title">ShardNote</title>
+  <defs>
+    <linearGradient id="left" x1="9" y1="14" x2="34" y2="54" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#73c7ff"/>
+      <stop offset="1" stop-color="#3978f6"/>
+    </linearGradient>
+    <linearGradient id="right" x1="55" y1="14" x2="31" y2="55" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#a78bfa"/>
+      <stop offset="1" stop-color="#5b6cf9"/>
+    </linearGradient>
+  </defs>
+  <path d="M32 14 12 8 7 19v28l25 9V14Z" fill="url(#left)"/>
+  <path d="m32 14 20-6 5 11v28l-25 9V14Z" fill="url(#right)"/>
+  <path d="m12 8 20 6-9 12-16-7 5-11Z" fill="#a6e2ff" opacity=".72"/>
+  <path d="m52 8-20 6 9 12 16-7-5-11Z" fill="#c4b5fd" opacity=".65"/>
+  <path d="m23 26 9-12 9 12-9 30-9-30Z" fill="#172033" opacity=".9"/>
+  <circle cx="32" cy="14" r="2.2" fill="#f8fafc"/>
+  <circle cx="23" cy="26" r="2.2" fill="#d8f3ff"/>
+  <circle cx="41" cy="26" r="2.2" fill="#e7deff"/>
+</svg>

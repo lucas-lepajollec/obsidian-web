@@ -1,11 +1,13 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { requireSession } from '@/lib/auth';
+import { apiErrorResponse } from '@/lib/api';
 import { buildGraphData } from '@/lib/vault';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const data = buildGraphData();
-    return NextResponse.json(data);
+    requireSession(request, 'read');
+    return NextResponse.json(await buildGraphData(), { headers: { 'Cache-Control': 'no-store' } });
   } catch (error) {
-    return NextResponse.json({ nodes: [], edges: [] });
+    return apiErrorResponse(error, 'Unable to build the graph.');
   }
 }
