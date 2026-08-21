@@ -1,6 +1,8 @@
 <div align="center">
-  <img src="public/logo.svg" alt="ShardNote" width="320" />
+  <img src="./public/shardnote-mark.svg" alt="ShardNote logo" width="72" height="72" />
+  <h1>ShardNote</h1>
   <p><strong>A private, self-hosted Markdown workspace for the web.</strong></p>
+  <p><code>Next.js 16</code> · <code>Docker</code> · <code>Markdown</code> · <code>Self-hosted</code></p>
 </div>
 
 ShardNote lets you browse, search, edit, and explore a folder of Markdown notes from a responsive browser interface. It works with ordinary `.md` files and common wiki links, so your content remains portable and under your control.
