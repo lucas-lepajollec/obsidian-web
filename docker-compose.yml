@@ -5,11 +5,12 @@ services:
     build:
       context: .
       target: runner
+    image: shardnote:local
     container_name: shardnote
     restart: unless-stopped
     init: true
     ports:
-      - "2506:2506"
+      - "${SHARDNOTE_BIND_ADDRESS:-127.0.0.1}:2506:2506"
     volumes:
       - ${SHARDNOTE_VAULT_PATH:-./vault}:/vault:rw
     environment:
@@ -22,3 +23,13 @@ services:
       - no-new-privileges:true
     cap_drop:
       - ALL
+    read_only: true
+    tmpfs:
+      - /tmp:size=32m,mode=1777
+      - /app/.next/cache:size=64m,uid=1001,gid=1001,mode=0750
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:2506/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
