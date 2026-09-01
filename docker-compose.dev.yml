@@ -8,7 +8,7 @@ services:
     container_name: shardnote-dev
     init: true
     ports:
-      - "2499:2499"
+      - "${SHARDNOTE_DEV_BIND_ADDRESS:-127.0.0.1}:2499:2499"
     volumes:
       - .:/app
       - /app/node_modules

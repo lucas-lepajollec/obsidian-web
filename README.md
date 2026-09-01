@@ -33,7 +33,7 @@ ShardNote is an independent project and is not affiliated with or endorsed by Ob
 
 - Docker Engine with Docker Compose v2.
 - A directory containing your Markdown notes.
-- Port `2506` available, or a different host-side port in the Compose file.
+- Port `2506` available on loopback, or a different host-side port in the Compose file.
 - A password of at least 12 characters and a random session secret of at least 32 characters.
 
 ### 1. Download ShardNote
@@ -87,6 +87,8 @@ Back up the vault first, then update and rebuild the application:
 git pull --ff-only
 docker compose up -d --build
 docker compose ps
+
+Record the previous image ID before rebuilding. If the update fails, rebuild the prior Git commit or restore the previous image tag without deleting the vault. Set `SHARDNOTE_BIND_ADDRESS=0.0.0.0` only for deliberate trusted-LAN exposure behind HTTPS; the tracked default is `127.0.0.1`.
 ```
 
 These commands keep the configured vault. Never remove or replace the host notes directory unless you intentionally want to remove its contents.
