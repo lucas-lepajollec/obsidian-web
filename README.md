@@ -33,7 +33,7 @@ ShardNote is an independent project and is not affiliated with or endorsed by Ob
 
 - Docker Engine with Docker Compose v2.
 - A directory containing your Markdown notes.
-- Port `2506` available on loopback, or a different host-side port in the Compose file.
+- Port `2506` available on the Docker host, or a different host-side port in the Compose file.
 - A password of at least 12 characters and a random session secret of at least 32 characters.
 
 ### 1. Download ShardNote
@@ -73,7 +73,8 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 ### 3. Start ShardNote
 
 ```bash
-docker compose up -d --build
+docker compose pull
+docker compose up -d
 docker compose ps
 ```
 
@@ -81,14 +82,22 @@ Open `http://SERVER_IP:2506`. The container runs as UID/GID `1001:1001`; ensure 
 
 ### 4. Update safely
 
-Back up the vault first, then update and rebuild the application:
+Back up the vault first, then update the published image:
 
 ```bash
-git pull --ff-only
-docker compose up -d --build
+docker compose pull
+docker compose up -d
 docker compose ps
+```
 
-Record the previous image ID before rebuilding. If the update fails, rebuild the prior Git commit or restore the previous image tag without deleting the vault. Set `SHARDNOTE_BIND_ADDRESS=0.0.0.0` only for deliberate trusted-LAN exposure behind HTTPS; the tracked default is `127.0.0.1`.
+Record the previous image digest before updating. If the update fails, set `SHARDNOTE_IMAGE` to the previous version or `sha-<full-commit>` tag and recreate the container without deleting the vault.
+
+Compose publishes port `2506` on the host interfaces so ShardNote works directly on a normal self-hosted LAN. Keep authentication enabled and do not expose it directly to the public internet. Use an authenticated HTTPS reverse proxy or firewall rules for remote access. To restrict it to the Docker host, override the mapping with `127.0.0.1:2506:2506` in a local Compose override.
+
+To build the current checkout instead of pulling GHCR, use:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.build.yml up -d --build
 ```
 
 These commands keep the configured vault. Never remove or replace the host notes directory unless you intentionally want to remove its contents.
@@ -117,6 +126,7 @@ Open one of the LAN addresses printed by the command. Direct LAN access uses HTT
 
 | Variable | Required | Default | Purpose |
 | --- | --- | --- | --- |
+| `SHARDNOTE_IMAGE` | Docker only | `ghcr.io/lucas-lepajollec/shardnote:latest` | Published image or immutable rollback tag |
 | `SHARDNOTE_VAULT_PATH` | Docker only | `./vault` | Host directory mounted into the container |
 | `NOTES_PATH` | No | `./vault` | Vault path used by the Node.js application |
 | `SHARDNOTE_PASSWORD` | Yes | — | Password of at least 12 characters |
